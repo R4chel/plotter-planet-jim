@@ -1,8 +1,11 @@
 import vsketch
 from shapely.geometry import Point
+import numpy as np
+
 
 def random_elem(vsk: vsketch.Vsketch, items):
     return items[int(vsk.random(0, 1) * len(items))]
+
 
 class PlanetJimSketch(vsketch.SketchClass):
     # Sketch parameters:
@@ -11,6 +14,8 @@ class PlanetJimSketch(vsketch.SketchClass):
     height = vsketch.Param(3., decimals=2, unit="in")
     pen_width = vsketch.Param(0.7, decimals=3, unit="mm")
     num_layers = vsketch.Param(1)
+    num_steps = vsktech.Param(1000)
+
     # maxRadiusRatio = vsketch.Param(0.2, decimals=5)
     # maxInnerCircles = vsketch.Param(10)
 
@@ -22,9 +27,10 @@ class PlanetJimSketch(vsketch.SketchClass):
         vsk.penWidth(f"{self.pen_width}")
 
         layers = [1 + i for i in range(self.num_layers)]
-        bigCircle = MyShape(self.width/2, self.height/2, min(self.width, self.height)/2, random_elem(vsk, layers))
+        bigCircle = MyShape(self.width / 2, self.height / 2,
+                            min(self.width, self.height) / 2,
+                            random_elem(vsk, layers))
         bigCircle.draw(vsk)
-
 
     def finalize(self, vsk: vsketch.Vsketch) -> None:
         vsk.vpype("linemerge linesimplify reloop linesort")
@@ -35,18 +41,23 @@ if __name__ == "__main__":
 
 
 class MyShape:
-    def __init__(self,x,y,r, layer):
+
+    def __init__(self, x, y, r, layer):
         self.x = x
         self.y = y
         self.radius = r
-        self.layer = layer 
+        self.layer = layer
+        self.innerShapes = []
 
     def to_shape(self, vsk: vsketch.Vsketch):
         shape = vsk.createShape()
-        shape.circle(self.x,self.y,radius=self.radius)
+        shape.circle(self.x, self.y, radius=self.radius)
         return shape
 
-    def draw(self, vsk:vsketch.Vsketch):
+    def draw(self, vsk: vsketch.Vsketch):
         vsk.fill(self.layer)
         vsk.shape(self.to_shape(vsk))
 
+    def spawn_inner_cirlce(self, vsk):
+        theta = vsk.random(0, np.pi * 2)
+        pass
