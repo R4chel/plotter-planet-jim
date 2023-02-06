@@ -14,7 +14,7 @@ class PlanetJimSketch(vsketch.SketchClass):
     height = vsketch.Param(3., decimals=2, unit="in")
     pen_width = vsketch.Param(0.7, decimals=3, unit="mm")
     num_layers = vsketch.Param(1)
-    num_steps = vsketch.Param(1000)
+    num_steps = vsketch.Param(2)
     edge_buffer = vsketch.Param(1, unit="px")
 
     # maxRadiusRatio = vsketch.Param(0.2, decimals=5)
@@ -75,6 +75,7 @@ class MyShape:
     def draw(self, vsk: vsketch.Vsketch):
         vsk.fill(self.layer)
         vsk.shape(self.to_shape(vsk))
+        vsk.translate(self.center.x, self.center.y)
         for shape in self.inner_shapes:
             shape.draw(vsk)
 
