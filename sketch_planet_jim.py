@@ -66,8 +66,8 @@ class MyShape:
         shape = vsk.createShape()
         shape.circle(self.center.x, self.center.y, radius=self.radius)
         for inner in self.inner_shapes:
-            shape.circle(inner.center.x + self.center.x,
-                         inner.center.y + self.center.y,
+            shape.circle(inner.center.x,
+                         inner.center.y,
                          radius=inner.radius,
                          op="difference")
         return shape
@@ -75,16 +75,15 @@ class MyShape:
     def draw(self, vsk: vsketch.Vsketch):
         vsk.fill(self.layer)
         vsk.shape(self.to_shape(vsk))
-        vsk.translate(self.center.x, self.center.y)
         for shape in self.inner_shapes:
             shape.draw(vsk)
 
     def spawn_inner_cirlce(self, vsk, edge_buffer, min_radius, layers,
                            max_inner_circles_ratio):
         theta = vsk.random(0, np.pi * 2)
-        max_r = self.radius - edge_buffer
+        max_r = self.radius / 2 - edge_buffer
         offset = vsk.random(0, max_r)
-        p = Point2D(a=theta, r=offset)
+        p = Point2D(a=theta, r=offset) + self.center
         r = maxRadiusAtP(self.inner_shapes, p, max_r)
         if r is None or r < min_radius:
             return None
@@ -93,9 +92,8 @@ class MyShape:
                         if l != self.layer] if len(layers) > 1 else layers
         layer = random_elem(vsk, other_layers)
         newShape = MyShape(p, r, layer)
+        self.inner_shapes.append(newShape)
         maxInnerCircles = int(r * max_inner_circles_ratio)
         for _ in range(maxInnerCircles):
             newShape.spawn_inner_cirlce(vsk, edge_buffer, min_radius, layers,
                                         max_inner_circles_ratio)
-
-        self.inner_shapes.append(newShape)
