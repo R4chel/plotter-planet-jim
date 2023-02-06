@@ -13,7 +13,7 @@ let colors = [];
 
 let backgroundColor;
 let maxPossibleRadius = canvasWidth / 5;
-// let maxInnerCircles = 10;
+let maxInnerCircles = 10;
 
 function setup() {
     createCanvas(canvasWidth, canvasHeight);
