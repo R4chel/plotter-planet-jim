@@ -13,7 +13,7 @@ class PlanetJimSketch(vsketch.SketchClass):
     width = vsketch.Param(5., decimals=2, unit="in")
     height = vsketch.Param(3., decimals=2, unit="in")
     pen_width = vsketch.Param(0.7, decimals=3, unit="mm")
-    num_layers = vsketch.Param(3)
+    num_layers = vsketch.Param(3, min_value=2)
     num_steps = vsketch.Param(1000)
     edge_buffer = vsketch.Param(1, unit="px")
     min_radius_multiplier = vsketch.Param(0.2, decimals=4)
@@ -102,8 +102,7 @@ class MyShape:
 
         if r < config.min_radius:
             return None
-        other_layers = [l for l in layers
-                        if l != self.layer] if len(layers) > 1 else layers
+        other_layers = [l for l in layers if l != self.layer]
         layer = random_elem(vsk, other_layers)
         newShape = MyShape(p, r, layer)
         self.inner_shapes.append(newShape)
