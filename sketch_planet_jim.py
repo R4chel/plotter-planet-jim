@@ -104,7 +104,7 @@ class MyShape:
             return None
         other_layers = [l for l in layers if l != self.layer]
         layer = random_elem(vsk, other_layers)
-        newShape = MyShape(p, r, layer)
+        newShape = MyShape(p, r, layers) if len(layers) > 1 else layers
         self.inner_shapes.append(newShape)
         for _ in range(config.max_num_inner_circles):
             newShape.spawn_inner_cirlce(vsk, config, layers)
