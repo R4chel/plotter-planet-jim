@@ -14,13 +14,13 @@ class PlanetJimSketch(vsketch.SketchClass):
     height = vsketch.Param(3., decimals=2, unit="in")
     pen_width = vsketch.Param(0.7, decimals=3, unit="mm")
     num_layers = vsketch.Param(3, min_value=2)
+    draw_stroke = vsketch.Param(False)
     num_steps = vsketch.Param(1000)
     edge_buffer = vsketch.Param(1, unit="px")
     min_radius_multiplier = vsketch.Param(0.2, decimals=4)
     max_radius_multiplier = vsketch.Param(0.95, decimals=4)
     precision = vsketch.Param(3)
 
-    # maxRadiusRatio = vsketch.Param(0.2, decimals=5)
     min_radius = vsketch.Param(0.1, decimals=4, unit="in")
 
     max_num_inner_circles = vsketch.Param(20)
@@ -38,7 +38,7 @@ class PlanetJimSketch(vsketch.SketchClass):
             if self.debug:
                 print(f"{i}/{self.num_steps}")
             bigCircle.spawn_inner_cirlce(vsk, self, layers)
-        bigCircle.draw(vsk)
+        bigCircle.draw(vsk, self)
 
     def finalize(self, vsk: vsketch.Vsketch) -> None:
         vsk.vpype("linemerge linesimplify reloop linesort")
@@ -76,11 +76,15 @@ class MyShape:
                          op="difference")
         return shape
 
-    def draw(self, vsk: vsketch.Vsketch):
+    def draw(self, vsk: vsketch.Vsketch, config):
+        if config.draw_stroke:
+            vsk.stroke(self.layer)
+        else:
+            vsk.noStroke()
         vsk.fill(self.layer)
         vsk.shape(self.to_shape(vsk))
         for shape in self.inner_shapes:
-            shape.draw(vsk)
+            shape.draw(vsk, config)
 
     def spawn_inner_cirlce(self, vsk, config, layers):
         x = vsk.random(0, 1)
