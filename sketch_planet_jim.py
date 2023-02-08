@@ -35,6 +35,8 @@ class PlanetJimSketch(vsketch.SketchClass):
                             min(self.width, self.height) / 2,
                             random_elem(vsk, layers))
         for i in range(self.num_steps):
+            if self.debug:
+                print(f"{i}/{self.num_steps}")
             bigCircle.spawn_inner_cirlce(vsk, self, layers)
         bigCircle.draw(vsk)
 
@@ -103,8 +105,9 @@ class MyShape:
         if r < config.min_radius:
             return None
         other_layers = [l for l in layers if l != self.layer]
-        layer = random_elem(vsk, other_layers)
-        newShape = MyShape(p, r, layers) if len(layers) > 1 else layers
+        layer = random_elem(
+            vsk, other_layers) if len(other_layers) >= 1 else self.layer
+        newShape = MyShape(p, r, layer)
         self.inner_shapes.append(newShape)
         for _ in range(config.max_num_inner_circles):
             newShape.spawn_inner_cirlce(vsk, config, layers)
