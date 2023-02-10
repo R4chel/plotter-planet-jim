@@ -14,6 +14,7 @@ class PlanetJimSketch(vsketch.SketchClass):
     height = vsketch.Param(3., decimals=2, unit="in")
     pen_width = vsketch.Param(0.7, decimals=3, unit="mm")
     num_layers = vsketch.Param(3, min_value=2)
+    occult = vsketch.Param(False)
     draw_stroke = vsketch.Param(False)
     num_steps = vsketch.Param(1000)
     edge_buffer = vsketch.Param(1, unit="px")
@@ -40,8 +41,15 @@ class PlanetJimSketch(vsketch.SketchClass):
             bigCircle.spawn_inner_cirlce(vsk, self, layers)
         bigCircle.draw(vsk, self)
 
+        if self.occult:
+            vsk.vpype("occult")
+
+
     def finalize(self, vsk: vsketch.Vsketch) -> None:
-        vsk.vpype("linemerge linesimplify reloop linesort")
+        if self.occult:
+            vsk.vpype("linemerge occult linesimplify reloop linesort")
+        else:
+            vsk.vpype("linemerge linesimplify reloop linesort")
 
 
 if __name__ == "__main__":
