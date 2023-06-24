@@ -42,7 +42,7 @@ class PlanetJimSketch(vsketch.SketchClass):
         bigCircle.draw(vsk, self)
 
         if self.occult:
-            vsk.vpype("occult")
+            vsk.vpype("occult -i -k")
 
 
     def finalize(self, vsk: vsketch.Vsketch) -> None:
